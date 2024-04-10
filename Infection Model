@@ -1,0 +1,21 @@
+ SIY.MODEL <- function(times, N0, params){ 
+ N0[N0 < 10^-8] <- 0 
+ S <- N0[1]
+ I <- N0[2]
+ P <- N0[3]
+ N <- S + I
+   with(as.list(params), {
+ dS.dt <- (r*S)*(1-N/K)-(B*S*I)-((alpha12*S*P)/(h + S))
+ dI.dt <- (B*S*I) - (beta12*I*P)-(c*I)
+ dP.dt <- ((alpha21*alpha12*S*P)/(h + S)) + (beta21*beta12*I*P) - (d2*P) 
+  return(list(c(dS.dt, dI.dt, dP.dt))) 
+   }) 
+ } 
+params <- c(r = 0.55, K = 150, h = 0.1, B = 0.04, alpha12 = 0.215, beta12 = 0.25, c = 0.25, alpha21 = 0.4, beta21 = 0.1, d2 = 0.2)
+N0 <- c(50,30,10)
+ t.values <- seq(0, 100)
+ 
+SIY.MODEL.out <- ode(N0, t.values, SIY.MODEL, params)
+par(mfrow=c(1,1)) 
+matplot(SIY.MODEL.out[,c(2,3,4)], type = 'l', lty = 1, lwd = 2, ylab='Abundance', xlab='Time') 
+legend('topright', c('Susceptible Prey', 'Infected Prey', 'Predator'), lty = 1, lwd = 2, col = c('black', 'red', 'green'))
